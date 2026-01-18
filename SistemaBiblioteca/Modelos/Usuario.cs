@@ -23,7 +23,6 @@ namespace SistemaBiblioteca.Modelos
         public long CPF { get; }
         public TipoUsuario TipoDoUsuario { get; }
         public StatusAtividade AtividadeUsuario { get; private set; }
-		private Random rdn = new Random();
 		private List<Emprestimo> Emprestimos = new List<Emprestimo>();
         public IReadOnlyCollection<Emprestimo> _Emprestimos => Emprestimos;
 

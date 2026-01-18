@@ -7,43 +7,50 @@ namespace SistemaBiblioteca.Serviços
 {
     internal class Biblioteca
     {
-        public Dictionary<Guid,Livro> livros { get; private set; } = new Dictionary<Guid, Livro>();
-		public Dictionary<Guid,Usuario> usuarios { get; private set; } = new Dictionary<Guid, Usuario>();
-        public List<Emprestimo> emprestimosAtivos { get; } = new List<Emprestimo>();
-        internal Stack<Emprestimo> HistoriDeEmprestimos { get; } = new Stack<Emprestimo>();
+        private Dictionary<Guid,Livro> Livros = new Dictionary<Guid, Livro>();
+		private Dictionary<Guid,Usuario> Usuarios = new Dictionary<Guid, Usuario>();
+        private List<Emprestimo> emprestimosAtivos = new List<Emprestimo>();
+        private Stack<Emprestimo> HistoriDeEmprestimos = new Stack<Emprestimo>();
 
-		public void AdicionarLivro(Livro livro)
+        public Usuario GetUsuarioPeloCpf(long cpf)
         {
-            if (livros.ContainsKey(livro.Id))
-            {
-                throw new InvalidOperationException($"O Livro {livro.Titulo} Ja esta Cadstrado");
-            }
-			livros.Add(livro.Id,livro);
+            return Usuarios.Values.FirstOrDefault(u => u.CPF == cpf);       
+        }
+
+        public Livro? GetLivroTitulo (string titulo)
+        {
+			return Livros.Values.FirstOrDefault(l => l.Titulo == titulo);
+		}
+        public void AdicionarLivro(Livro livro)
+        {
+			Livros.Add(livro.Id,livro);
 
 		}
         public void CadatrarUsuario(Usuario usuario)
         {
-            if (usuarios.ContainsKey(usuario.IdUsuario))
+            if (GetUsuarioPeloCpf(usuario.CPF) is not null)
             {
-                throw new InvalidOperationException($"O usuario {usuario.Name} ja Esta Cadastrado");
+                throw new InvalidOperationException($"O CPF {usuario.CPF} ja Esta Cadastrado");
             }
-			usuarios.Add(usuario.IdUsuario, usuario);
-
+			Usuarios.Add(usuario.IdUsuario, usuario);
 		}
         public void CriarEmprestimo(Usuario usuario, Livro livro)
         {
-            if (!usuarios.ContainsKey(usuario.IdUsuario))
+            if (usuario is null)
             {
                 throw new InvalidOperationException($"Usuario Não Cadastrado, Realize o cadastro e tente Novamente");
             }
-            if (!livros.ContainsKey(livro.Id))
+            if (livro is null)
             {
                 throw new InvalidOperationException("Livro não existe na biblioteca");
             }
-			var novoEmprestimo = new Emprestimo(livro, usuario);
-            livro.Emprestar();
-            usuario.AdicionarEmprestimoAoUsuario(novoEmprestimo);
-			emprestimosAtivos.Add(novoEmprestimo);
+            else
+            {
+                var novoEmprestimo = new Emprestimo(livro, usuario);
+                livro.Emprestar();
+                usuario.AdicionarEmprestimoAoUsuario(novoEmprestimo);
+                emprestimosAtivos.Add(novoEmprestimo);
+            }
 		}
 
         public void DevolverLivro(Usuario usuario,Emprestimo emprestimo, Livro livro)
@@ -56,11 +63,11 @@ namespace SistemaBiblioteca.Serviços
 
         public void ReservarLivro(Usuario usuario, Livro livro)
         {
-			if (!usuarios.ContainsKey(usuario.IdUsuario))
+			if (usuario is null)
 			{
 				throw new InvalidOperationException($"Usuario Não Cadastrado, Realize o cadastro e tente Novamente");
 			}
-			if (!livros.ContainsKey(livro.Id))
+			if (livro is null)
 			{
 				throw new InvalidOperationException("Livro não existe na biblioteca");
 			}

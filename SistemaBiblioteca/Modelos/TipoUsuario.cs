@@ -1,6 +1,6 @@
 ﻿public enum TipoUsuario
 {
-	Aluno,
-	Professor,
-	Funcionario
+	Aluno = 0,
+	Professor = 1,
+	Funcionario = 2,
 }
