@@ -17,10 +17,18 @@ namespace SistemaBiblioteca.Serviços
             return Usuarios.Values.FirstOrDefault(u => u.CPF == cpf);       
         }
 
-        public Livro? GetLivroTitulo (string titulo)
+        public IEnumerable<Livro> GetLivroTitulo (string titulo)
         {
-			return Livros.Values.FirstOrDefault(l => l.Titulo == titulo);
+            var livros = Livros
+                 .Where(l => l.Value.Titulo.Equals(titulo, StringComparison.OrdinalIgnoreCase))
+                 .Select(l => l.Value);
+            return livros;
 		}
+        public Livro GetLivro(Guid id)
+        {
+            return Livros[id];
+        }
+
         public void AdicionarLivro(Livro livro)
         {
 			Livros.Add(livro.Id,livro);
