@@ -11,12 +11,10 @@ namespace SistemaBiblioteca.Serviços
 		private Dictionary<Guid,Usuario> Usuarios = new Dictionary<Guid, Usuario>();
         private List<Emprestimo> emprestimosAtivos = new List<Emprestimo>();
         private Stack<Emprestimo> HistoriDeEmprestimos = new Stack<Emprestimo>();
-
-        public Usuario GetUsuarioPeloCpf(long cpf)
+        public Usuario? GetUsuarioPeloCpf(long cpf)
         {
             return Usuarios.Values.FirstOrDefault(u => u.CPF == cpf);       
         }
-
         public IEnumerable<Livro> GetLivroTitulo (string titulo)
         {
             var livros = Livros
@@ -49,22 +47,21 @@ namespace SistemaBiblioteca.Serviços
                 throw new InvalidOperationException($"Usuario Não Cadastrado, Realize o cadastro e tente Novamente");
             }
             if (livro is null)
-            {
-                throw new InvalidOperationException("Livro não existe na biblioteca");
-            }
-            else
-            {
-                var novoEmprestimo = new Emprestimo(livro, usuario);
-                livro.Emprestar();
-                usuario.AdicionarEmprestimoAoUsuario(novoEmprestimo);
-                emprestimosAtivos.Add(novoEmprestimo);
-            }
+                throw new InvalidOperationException("Livro não existe na biblioteca");   
+			if (!usuario.VerificarEmprestimos())
+				throw new InvalidOperationException("Usuário não Pode Realizar Emprestimo.");
+			if (livro.StatusDoLivro != StatusDoLivro.Disponivel && livro.UsuarioQueReservou != usuario)
+				throw new InvalidOperationException($"Impossivel Emprestar Pois O livro ja esta Reservado para outra Pessoa");
+           
+				var novoEmprestimo = new Emprestimo(livro, usuario);
+				livro.Emprestar(usuario);
+				usuario.AdicionarEmprestimoAoUsuario(novoEmprestimo);
+				emprestimosAtivos.Add(novoEmprestimo);	
 		}
-
         public void DevolverLivro(Usuario usuario,Emprestimo emprestimo, Livro livro)
         {
             usuario.DevolverLivro(emprestimo);
-            livro.Devolver();
+            livro.Disponivel();
             emprestimo.FinalizarEmprestimo();
             HistoriDeEmprestimos.Push(emprestimo);  
         }
@@ -79,7 +76,10 @@ namespace SistemaBiblioteca.Serviços
 			{
 				throw new InvalidOperationException("Livro não existe na biblioteca");
 			}
-			livro.Reservar();
+			if (!usuario.VerificarReserva())
+				throw new InvalidOperationException("Usuário não Pode Realizar Reserva.");
+			livro.Reservar(usuario);
+            usuario.ReservarLivro(livro);
 		}
         public IEnumerable<Emprestimo> MostrarHistorico ()
         {

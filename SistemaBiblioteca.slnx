@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Biblioteca.Api/Biblioteca.Api.csproj" Id="56816d78-c072-413c-9375-7948e6205b46" />
   <Project Path="SistemaBiblioteca/SistemaBiblioteca.csproj" />
 </Solution>
