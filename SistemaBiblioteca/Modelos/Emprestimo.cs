@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SistemaBiblioteca.Modelos
 {
-    internal class Emprestimo
+    public class Emprestimo
     {
 		public Emprestimo(Livro livroEmprestado, Usuario usuarioQueEmprestou)
 		{
