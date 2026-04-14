@@ -1,20 +1,11 @@
-﻿using Biblioteca.Api.Exceptions;
+﻿using LibrarySystem.Domain.Exceptions;
 
-namespace Biblioteca.Api.Modelos;
+namespace LibrarySystem.Domain.Modelos;
 
 public class Livro
 {
 	public Livro(string titulo, string autor, string isbn, int anoPublicação)
 	{
-		if (string.IsNullOrWhiteSpace(titulo))
-			throw new ArgumentException("Título não pode estar vazio.", nameof(titulo));
-		if (string.IsNullOrWhiteSpace(autor))
-			throw new ArgumentException("Autor não pode estar vazio.", nameof(autor));
-		if (string.IsNullOrWhiteSpace(isbn))
-			throw new ArgumentException("ISBN não pode estar vazio.", nameof(isbn));
-		if (anoPublicação < 0)
-			throw new ArgumentException("Ano de publicação não pode ser negativo.", nameof(anoPublicação));
-
 		Titulo = titulo;
 		Id = Guid.NewGuid();
 		Autor = autor;
@@ -29,42 +20,42 @@ public class Livro
 	public string ISBN { get; }
 	public int AnoPublicação { get; }
 	public StatusDoLivro StatusDoLivro { get; private set; }
-	public Usuario? UsuarioQueReservou { get; private set; }
-	public Usuario? UsuarioQueEmprestou { get; private set; }
+	public Guid? UsuarioQueReservouId { get; private set; }
+	public Guid? UsuarioQueEmprestouId { get; private set; }
 
 	/// <summary>
 	/// Emprestar livro para um usuário.
 	/// Valida se: livro está disponível ou reservado para este usuário, e se não está inativo
 	/// </summary>
-	public void Emprestar(Usuario usuario)
+	public void Emprestar(Guid usuarioId)
 	{
 		if (StatusDoLivro == StatusDoLivro.Inativo)
-			throw new LivroInativoException(Titulo);
+			throw new DomainException($"O livro '{Titulo}' está inativo.");
 
 		if (StatusDoLivro == StatusDoLivro.Emprestado)
-			throw new LivroNaoDisponibilizadoException(Titulo, StatusDoLivro.ToString());
+			throw new DomainException($"O livro '{Titulo}' não está disponível. Status: {StatusDoLivro}");
 
-		if (StatusDoLivro == StatusDoLivro.Reservado && UsuarioQueReservou != usuario)
-			throw new LivroReservadoParaOutroUsuarioException(Titulo);
+		if (StatusDoLivro == StatusDoLivro.Reservado && UsuarioQueReservouId != usuarioId)
+			throw new DomainException($"O livro '{Titulo}' está reservado para outro usuário.");
 
 		StatusDoLivro = StatusDoLivro.Emprestado;
-		UsuarioQueEmprestou = usuario;
-		UsuarioQueReservou = null;
+		UsuarioQueEmprestouId = usuarioId;
+		UsuarioQueReservouId = null;
 	}
 
 	/// <summary>
 	/// Reservar livro para um usuário.
 	/// Valida se: livro não está inativo e ainda não possui reserva
 	/// </summary>
-	public void Reservar(Usuario usuario)
+	public void Reservar(Guid usuarioId)
 	{
 		if (StatusDoLivro == StatusDoLivro.Inativo)
-			throw new LivroInativoException(Titulo);
+			throw new DomainException($"O livro '{Titulo}' está inativo.");
 
 		if (StatusDoLivro == StatusDoLivro.Reservado)
-			throw new LivroJaReservadoException(Titulo);
+			throw new DomainException($"O livro '{Titulo}' já possui uma reserva.");
 
-		UsuarioQueReservou = usuario;
+		UsuarioQueReservouId = usuarioId;
 		StatusDoLivro = StatusDoLivro.Reservado;
 	}
 
@@ -74,10 +65,10 @@ public class Livro
 	internal void MarcarComoDisponivel()
 	{
 		if (StatusDoLivro == StatusDoLivro.Disponivel)
-			throw new InvalidOperationException("Livro já está disponível.");
+			throw new DomainException("Livro já está disponível.");
 
 		StatusDoLivro = StatusDoLivro.Disponivel;
-		UsuarioQueEmprestou = null;
+		UsuarioQueEmprestouId = null;
 	}
 
 	/// <summary>
@@ -87,7 +78,8 @@ public class Livro
 	public void Inativar()
 	{
 		if (StatusDoLivro != StatusDoLivro.Disponivel)
-			throw new NaoPodeInativarLivroEmprestamoException(Titulo, StatusDoLivro.ToString());
+			throw new DomainException("Livro não pode ser inativado, verifique se ele ja esta emprestado, reservado" +
+			"ou se ja esta inativo");
 
 		StatusDoLivro = StatusDoLivro.Inativo;
 	}

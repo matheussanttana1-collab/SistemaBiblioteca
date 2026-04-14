@@ -1,6 +1,6 @@
-﻿using Biblioteca.Api.Exceptions;
+﻿using LibrarySystem.Domain.Exceptions;
 
-namespace Biblioteca.Api.Modelos;
+namespace LibrarySystem.Domain.Modelos;
 
 public class Emprestimo
 {
@@ -15,10 +15,10 @@ public class Emprestimo
 
 		// Validar invariantes de negócio
 		if (livroEmprestado.StatusDoLivro == StatusDoLivro.Inativo)
-			throw new LivroInativoException(livroEmprestado.Titulo);
+			throw new DomainException($"O livro '{livroEmprestado.Titulo}' está inativo.");
 
 		if (usuarioQueEmprestou.AtividadeUsuario == StatusAtividade.Inativo)
-			throw new UsuarioInativoException(usuarioQueEmprestou.Name, "pegar livros em empréstimo");
+			throw new DomainException($"Usuário '{usuarioQueEmprestou.Name}' está inativo e não pode pegar livros em empréstimo.");
 
 		IdEmprestimo = Guid.NewGuid();
 		LivroEmprestado = livroEmprestado;
@@ -46,10 +46,10 @@ public class Emprestimo
 	public void FinalizarEmprestimo()
 	{
 		if (StatusEmprestimo == StatusAtividade.Inativo)
-			throw new EmprestimoJaFinalizadoException();
+			throw new DomainException("Este empréstimo já foi finalizado.");
 
 		if (DataDevolucao.HasValue)
-			throw new InvalidOperationException("Empréstimo já foi finalizado com data de devolução registrada.");
+			throw new DomainException("Empréstimo já foi finalizado com data de devolução registrada.");
 
 		DataDevolucao = DateTime.Today;
 		StatusEmprestimo = StatusAtividade.Inativo;

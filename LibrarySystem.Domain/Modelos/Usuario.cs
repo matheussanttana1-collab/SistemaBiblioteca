@@ -1,6 +1,7 @@
-﻿using Biblioteca.Api.Exceptions;
+﻿using LibrarySystem.Domain.Exceptions;
+using LibrarySystem.Domain.Modelos;
 
-namespace Biblioteca.Api.Modelos;
+namespace LibrarySystem.Domain.Modelos;
 
 public class Usuario
 {
@@ -61,10 +62,10 @@ public class Usuario
 	/// <summary>
 	/// Desativa o usuário, impedindo novas operações
 	/// </summary>
-	internal void DesativarUsuario()
+	public void DesativarUsuario()
 	{
 		if (AtividadeUsuario == StatusAtividade.Inativo)
-			throw new InvalidOperationException("Usuário já está inativo.");
+			throw new DomainException("Usuário já está inativo.");
 
 		AtividadeUsuario = StatusAtividade.Inativo;
 	}
@@ -75,10 +76,10 @@ public class Usuario
 	public void AdicionarEmprestimoAoUsuario(Emprestimo emprestimo)
 	{
 		if (AtividadeUsuario == StatusAtividade.Inativo)
-			throw new UsuarioInativoException(Name, "realizar empréstimos");
+			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar empréstimos.");
 
 		if (Emprestimos.Count >= LimiteDeEmprestimos)
-			throw new LimiteDeEmprestimosExcedidoException(Name, LimiteDeEmprestimos);
+			throw new DomainException($"Limite de empréstimos ({LimiteDeEmprestimos}) excedido para o usuário '{Name}'.");
 
 		Emprestimos.Add(emprestimo);
 	}
@@ -89,7 +90,7 @@ public class Usuario
 	public void DevolverLivro(Emprestimo emprestimo)
 	{
 		if (!Emprestimos.Contains(emprestimo))
-			throw new EmprestimoNaoExisteException();
+			throw new DomainException("Empréstimo não existe para este usuário.");
 
 		Emprestimos.Remove(emprestimo);
 	}
@@ -100,10 +101,10 @@ public class Usuario
 	public void ReservarLivro(Livro livro)
 	{
 		if (AtividadeUsuario == StatusAtividade.Inativo)
-			throw new UsuarioInativoException(Name, "realizar reservas");
+			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar reservas.");
 
 		if (Reservas.Count >= LimiteDeReservas)
-			throw new LimiteDeReservasExcedidoException(Name, LimiteDeReservas);
+			throw new DomainException($"Limite de reservas ({LimiteDeReservas}) excedido para o usuário '{Name}'.");
 
 		Reservas.Add(livro);
 	}
