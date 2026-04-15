@@ -1,4 +1,4 @@
-using LibrarySystem.Domain.Modelos;
+using LibrarySystem.DomainExcpetion.Modelos;
 
 namespace LibrarySystem.Applications.DTOs;
 

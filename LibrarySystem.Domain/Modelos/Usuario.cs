@@ -1,7 +1,7 @@
-﻿using LibrarySystem.Domain.Exceptions;
-using LibrarySystem.Domain.Modelos;
+﻿using LibrarySystem.DomainExcpetion.Exceptions;
+using LibrarySystem.DomainExcpetion.Modelos;
 
-namespace LibrarySystem.Domain.Modelos;
+namespace LibrarySystem.DomainExcpetion.Modelos;
 
 public class Usuario
 {
@@ -12,23 +12,23 @@ public class Usuario
 		if (cpf <= 0)
 			throw new ArgumentException("CPF inválido.", nameof(cpf));
 
-		IdUsuario = Guid.NewGuid();
+		Id = Guid.NewGuid();
 		Name = name;
 		CPF = cpf;
 		TipoDoUsuario = tipoUsuario;
-		Emprestimos = new List<Emprestimo>();
+		EmprestimosAtivos = new List<Emprestimo>();
 		AtividadeUsuario = StatusAtividade.Ativo;
 	}
 
-	public Guid IdUsuario { get; }
+	public Guid Id { get; }
 	public string Name { get; }
 	public long CPF { get; }
 	public TipoUsuario TipoDoUsuario { get; }
 	public StatusAtividade AtividadeUsuario { get; private set; }
-	private List<Emprestimo> Emprestimos = new List<Emprestimo>();
+	private List<Emprestimo> EmprestimosAtivos = new List<Emprestimo>();
 	private List<Livro> Reservas = new List<Livro>();
 
-	public IReadOnlyCollection<Emprestimo> ObterEmprestimos() => Emprestimos.AsReadOnly();
+	public IReadOnlyCollection<Emprestimo> ObterEmprestimos() => EmprestimosAtivos.AsReadOnly();
 	public IReadOnlyCollection<Livro> ObterReservas() => Reservas.AsReadOnly();
 
 	private int LimiteDeEmprestimos
@@ -64,6 +64,7 @@ public class Usuario
 	/// </summary>
 	public void DesativarUsuario()
 	{
+		
 		if (AtividadeUsuario == StatusAtividade.Inativo)
 			throw new DomainException("Usuário já está inativo.");
 
@@ -71,17 +72,12 @@ public class Usuario
 	}
 
 	/// <summary>
-	/// Adiciona um empréstimo ao usuário após validar regras de negócio
+	/// Adiciona um empréstimo ao usuário.
+	/// Altera apenas o estado, sem validação.
 	/// </summary>
-	public void AdicionarEmprestimoAoUsuario(Emprestimo emprestimo)
+	internal void AdicionarEmprestimoAoUsuario(Emprestimo emprestimo)
 	{
-		if (AtividadeUsuario == StatusAtividade.Inativo)
-			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar empréstimos.");
-
-		if (Emprestimos.Count >= LimiteDeEmprestimos)
-			throw new DomainException($"Limite de empréstimos ({LimiteDeEmprestimos}) excedido para o usuário '{Name}'.");
-
-		Emprestimos.Add(emprestimo);
+		EmprestimosAtivos.Add(emprestimo);
 	}
 
 	/// <summary>
@@ -89,23 +85,18 @@ public class Usuario
 	/// </summary>
 	public void DevolverLivro(Emprestimo emprestimo)
 	{
-		if (!Emprestimos.Contains(emprestimo))
+		if (!EmprestimosAtivos.Contains(emprestimo))
 			throw new DomainException("Empréstimo não existe para este usuário.");
 
-		Emprestimos.Remove(emprestimo);
+		EmprestimosAtivos.Remove(emprestimo);
 	}
 
 	/// <summary>
-	/// Reserva um livro para o usuário após validar regras de negócio
+	/// Reserva um livro para o usuário.
+	/// Altera apenas o estado, sem validação.
 	/// </summary>
-	public void ReservarLivro(Livro livro)
+	internal void ReservarLivro(Livro livro)
 	{
-		if (AtividadeUsuario == StatusAtividade.Inativo)
-			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar reservas.");
-
-		if (Reservas.Count >= LimiteDeReservas)
-			throw new DomainException($"Limite de reservas ({LimiteDeReservas}) excedido para o usuário '{Name}'.");
-
 		Reservas.Add(livro);
 	}
 
@@ -118,14 +109,26 @@ public class Usuario
 	}
 
 	/// <summary>
-	/// Verifica se usuário pode realizar empréstimos
+	/// Valida se usuário pode realizar empréstimos, lançando exceção se não puder
 	/// </summary>
-	public bool PodeEmprestar()
-		=> AtividadeUsuario == StatusAtividade.Ativo && Emprestimos.Count < LimiteDeEmprestimos;
+	internal void ValidarEmprestimo()
+	{
+		if (AtividadeUsuario == StatusAtividade.Inativo)
+			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar empréstimos.");
+
+		if (EmprestimosAtivos.Count >= LimiteDeEmprestimos)
+			throw new DomainException($"Limite de empréstimos ({LimiteDeEmprestimos}) excedido para o usuário '{Name}'.");
+	}
 
 	/// <summary>
-	/// Verifica se usuário pode realizar reservas
+	/// Valida se usuário pode realizar reservas, lançando exceção se não puder
 	/// </summary>
-	public bool PodeReservar()
-		=> AtividadeUsuario == StatusAtividade.Ativo && Reservas.Count < LimiteDeReservas;
+	internal void ValidarReserva()
+	{
+		if (AtividadeUsuario == StatusAtividade.Inativo)
+			throw new DomainException($"Usuário '{Name}' está inativo e não pode realizar reservas.");
+
+		if (Reservas.Count >= LimiteDeReservas)
+			throw new DomainException($"Limite de reservas ({LimiteDeReservas}) excedido para o usuário '{Name}'.");
+	}
 }

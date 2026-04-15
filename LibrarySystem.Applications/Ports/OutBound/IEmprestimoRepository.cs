@@ -1,4 +1,4 @@
-﻿using LibrarySystem.Domain.Modelos;
+﻿using LibrarySystem.DomainExcpetion.Modelos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

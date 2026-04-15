@@ -1,39 +1,22 @@
-﻿using LibrarySystem.Domain.Exceptions;
+﻿using LibrarySystem.DomainExcpetion.Exceptions;
 
-namespace LibrarySystem.Domain.Modelos;
+namespace LibrarySystem.DomainExcpetion.Modelos;
 
 public class Emprestimo
 {
 	private const int PrazoParaDevolucaoEmDias = 15;
 
-	public Emprestimo(Livro livroEmprestado, Usuario usuarioQueEmprestou)
+	public Emprestimo(Guid UsuarioId, Guid LivroId)
 	{
-		if (livroEmprestado == null)
-			throw new ArgumentNullException(nameof(livroEmprestado));
-		if (usuarioQueEmprestou == null)
-			throw new ArgumentNullException(nameof(usuarioQueEmprestou));
-
-		// Validar invariantes de negócio
-		if (livroEmprestado.StatusDoLivro == StatusDoLivro.Inativo)
-			throw new DomainException($"O livro '{livroEmprestado.Titulo}' está inativo.");
-
-		if (usuarioQueEmprestou.AtividadeUsuario == StatusAtividade.Inativo)
-			throw new DomainException($"Usuário '{usuarioQueEmprestou.Name}' está inativo e não pode pegar livros em empréstimo.");
-
-		IdEmprestimo = Guid.NewGuid();
-		LivroEmprestado = livroEmprestado;
-		UsuarioQueEmprestou = usuarioQueEmprestou;
+		Id = Guid.NewGuid();
 		DataEmprestimo = DateTime.Today;
 		DataPrevistaDevolucao = DataEmprestimo.AddDays(PrazoParaDevolucaoEmDias);
-		DataDevolucao = null;
 		StatusEmprestimo = StatusAtividade.Ativo;
 	}
 
-	public Guid IdEmprestimo { get; }
-	public Guid LivroId => LivroEmprestado.Id;
-	public Livro LivroEmprestado { get; }
-	public Guid UsuarioId => UsuarioQueEmprestou.IdUsuario;
-	public Usuario UsuarioQueEmprestou { get; }
+	public Guid Id { get; }
+	public Guid LivroId {  get; }
+	public Guid UsuarioId {  get; }
 	public DateTime DataEmprestimo { get; }
 	public DateTime DataPrevistaDevolucao { get; }
 	public DateTime? DataDevolucao { get; private set; }
@@ -44,13 +27,7 @@ public class Emprestimo
 	/// Só pode ser feito uma única vez.
 	/// </summary>
 	public void FinalizarEmprestimo()
-	{
-		if (StatusEmprestimo == StatusAtividade.Inativo)
-			throw new DomainException("Este empréstimo já foi finalizado.");
-
-		if (DataDevolucao.HasValue)
-			throw new DomainException("Empréstimo já foi finalizado com data de devolução registrada.");
-
+	{ 
 		DataDevolucao = DateTime.Today;
 		StatusEmprestimo = StatusAtividade.Inativo;
 	}

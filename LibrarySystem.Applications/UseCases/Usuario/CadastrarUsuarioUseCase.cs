@@ -1,6 +1,6 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.Domain.Modelos;
+using LibrarySystem.DomainExcpetion.Modelos;
 
 namespace LibrarySystem.Applications.UseCases.Usuarios;
 

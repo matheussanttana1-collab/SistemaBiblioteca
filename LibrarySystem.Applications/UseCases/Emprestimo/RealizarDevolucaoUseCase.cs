@@ -1,5 +1,5 @@
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.Domain.Services;
+using LibrarySystem.DomainExcpetion.Services;
 
 namespace LibrarySystem.Applications.UseCases.Emprestimos;
 

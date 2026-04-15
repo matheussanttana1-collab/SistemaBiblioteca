@@ -1,8 +1,8 @@
 ﻿using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
 
+
 namespace LibrarySystem.Applications.UseCases.Livros;
-using LibrarySystem.Domain.Modelos;
 
 public class CadastrarLivroUseCase
 {

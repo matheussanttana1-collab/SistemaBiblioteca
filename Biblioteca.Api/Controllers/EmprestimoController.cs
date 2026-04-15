@@ -1,4 +1,4 @@
-﻿using LibrarySystem.Domain.Modelos;
+﻿using LibrarySystem.DomainExcpetion.Modelos;
 // using Biblioteca.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
