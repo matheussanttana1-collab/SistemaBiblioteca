@@ -43,7 +43,6 @@ public class Livro
 		else
 			StatusDoLivro = StatusDoLivro.Disponivel;
 	}
-
 	public void InativarLivro()
 	{
 		if (StatusDoLivro == StatusDoLivro.Disponivel)
@@ -60,6 +59,7 @@ public class Livro
 			throw new DomainException("Livro ja Marcado como Disponivel");
 		StatusDoLivro = StatusDoLivro.Disponivel;
 	}
+
 	/// <summary>
 	/// Reservar livro para um usuário.
 	/// Altera apenas o estado, sem validação.
@@ -69,6 +69,16 @@ public class Livro
 		UsuarioQueReservouId = usuarioId;
 		if (StatusDoLivro !=  StatusDoLivro.Emprestado)
 			StatusDoLivro = StatusDoLivro.Reservado;
+	}
+
+	public void RetirarReserva() 
+	{
+		if (UsuarioQueReservouId == null)
+			throw new DomainException("Não existe Reserva para este livro");
+
+		UsuarioQueReservouId = null;
+		if (StatusDoLivro != StatusDoLivro.Emprestado)
+			StatusDoLivro = StatusDoLivro.Disponivel;
 	}
 
 	/// <summary>
