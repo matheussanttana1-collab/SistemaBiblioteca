@@ -1,4 +1,4 @@
-﻿namespace LibrarySystem.DomainExcpetion.Exceptions;
+﻿namespace LibrarySystem.Domain.Exceptions;
 
 /// <summary>
 /// Exceção para violações de regras de negócio no domínio

@@ -1,8 +1,8 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.DomainExcpetion.Services;
+using LibrarySystem.Domain.Services;
 
-namespace LibrarySystem.Applications.UseCases.Livro;
+namespace LibrarySystem.Applications.UseCases.Livros;
 
 public record RealizarReservaDto(Guid LivroId, Guid UsuarioId);
 
@@ -12,7 +12,8 @@ public class RealizarReservaUseCase
 	private readonly IUsuarioRepository usuarioRepository;
 	private readonly IBibliotecaService bibliotecaService;
 
-	public RealizarReservaUseCase(ILivroRepository livroRepository, IUsuarioRepository usuarioRepository, IBibliotecaService bibliotecaService)
+	public RealizarReservaUseCase(ILivroRepository livroRepository, IUsuarioRepository usuarioRepository, 
+	IBibliotecaService bibliotecaService)
 	{
 		this.livroRepository = livroRepository;
 		this.usuarioRepository = usuarioRepository;
@@ -26,7 +27,7 @@ public class RealizarReservaUseCase
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {dto.LivroId} não encontrado.");
 
-		var usuario = await usuarioRepository.BuscarUsuarioPeloId(dto.UsuarioId);
+		var usuario = await usuarioRepository.BuscarUsuarioComReservas(dto.UsuarioId);
 		if (usuario == null)
 			throw new InvalidOperationException($"Usuário com ID {dto.UsuarioId} não encontrado.");
 
@@ -35,6 +36,5 @@ public class RealizarReservaUseCase
 
 		// Persistir mudanças
 		await livroRepository.SalvarMudancas(livro);
-		await usuarioRepository.SalvarMudancas(usuario);
 	}
 }

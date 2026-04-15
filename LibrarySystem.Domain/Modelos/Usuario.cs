@@ -1,7 +1,7 @@
-﻿using LibrarySystem.DomainExcpetion.Exceptions;
-using LibrarySystem.DomainExcpetion.Modelos;
+﻿using LibrarySystem.Domain.Exceptions;
 
-namespace LibrarySystem.DomainExcpetion.Modelos;
+
+namespace LibrarySystem.Domain.Modelos;
 
 public class Usuario
 {
@@ -28,8 +28,8 @@ public class Usuario
 	private List<Emprestimo> EmprestimosAtivos = new List<Emprestimo>();
 	private List<Livro> Reservas = new List<Livro>();
 
-	public IReadOnlyCollection<Emprestimo> ObterEmprestimos() => EmprestimosAtivos.AsReadOnly();
-	public IReadOnlyCollection<Livro> ObterReservas() => Reservas.AsReadOnly();
+	public IReadOnlyCollection<Emprestimo> ObterEmprestimosAtivos() => EmprestimosAtivos.AsReadOnly();
+	public IReadOnlyCollection<Livro> ObterReservasAtivos() => Reservas.AsReadOnly();
 
 	private int LimiteDeEmprestimos
 	{
@@ -73,43 +73,27 @@ public class Usuario
 
 	/// <summary>
 	/// Adiciona um empréstimo ao usuário.
-	/// Altera apenas o estado, sem validação.
+	/// Altera apenas o estado, sem validação. 
+	/// Necessario para adicionar dinamicamente apos busca no banco de dados
 	/// </summary>
-	internal void AdicionarEmprestimoAoUsuario(Emprestimo emprestimo)
+	public void AdicionarEmprestimoAoUsuario(Emprestimo emprestimo)
 	{
 		EmprestimosAtivos.Add(emprestimo);
 	}
 
 	/// <summary>
-	/// Remove um empréstimo do usuário após devolução
-	/// </summary>
-	public void DevolverLivro(Emprestimo emprestimo)
-	{
-		if (!EmprestimosAtivos.Contains(emprestimo))
-			throw new DomainException("Empréstimo não existe para este usuário.");
-
-		EmprestimosAtivos.Remove(emprestimo);
-	}
-
-	/// <summary>
 	/// Reserva um livro para o usuário.
 	/// Altera apenas o estado, sem validação.
+	/// Necessario para adicionar dinamicamente apos busca no banco de dados
 	/// </summary>
-	internal void ReservarLivro(Livro livro)
+	public void AdicionarReservaAoUsuario(Livro livro)
 	{
 		Reservas.Add(livro);
 	}
 
 	/// <summary>
-	/// Remove uma reserva do usuário
-	/// </summary>
-	public void RemoverReserva(Livro livro)
-	{
-		Reservas.Remove(livro);
-	}
-
-	/// <summary>
 	/// Valida se usuário pode realizar empréstimos, lançando exceção se não puder
+	/// Usado apenas em Biblioteca Service por isso é Internal
 	/// </summary>
 	internal void ValidarEmprestimo()
 	{
@@ -122,6 +106,7 @@ public class Usuario
 
 	/// <summary>
 	/// Valida se usuário pode realizar reservas, lançando exceção se não puder
+	/// Usado apenas em Biblioteca Service por isso é Internal
 	/// </summary>
 	internal void ValidarReserva()
 	{

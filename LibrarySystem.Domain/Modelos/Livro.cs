@@ -1,6 +1,6 @@
-﻿using LibrarySystem.DomainExcpetion.Exceptions;
+﻿using LibrarySystem.Domain.Exceptions;
 
-namespace LibrarySystem.DomainExcpetion.Modelos;
+namespace LibrarySystem.Domain.Modelos;
 
 public class Livro
 {
@@ -21,7 +21,8 @@ public class Livro
 	public int AnoPublicação { get; }
 	public StatusDoLivro StatusDoLivro { get; private set; }
 	public Guid? UsuarioQueReservouId { get; private set; }
-	public Guid? UsuarioQueEmprestouId { get; private set; }
+
+
 
 	/// <summary>
 	/// Emprestar livro para um usuário.
@@ -30,11 +31,10 @@ public class Livro
 	internal void Emprestar(Guid usuarioId)
 	{
 		StatusDoLivro = StatusDoLivro.Emprestado;
-		UsuarioQueEmprestouId = usuarioId;
 		UsuarioQueReservouId = null;
 	}
 
-	internal void ProcessarDisponibilidade()
+	internal void FinalizarEmprestimo()
 	{
 		if (StatusDoLivro == StatusDoLivro.Disponivel)
 			throw new DomainException("Livro ja Marcado como Disponivel");
@@ -44,6 +44,22 @@ public class Livro
 			StatusDoLivro = StatusDoLivro.Disponivel;
 	}
 
+	public void InativarLivro()
+	{
+		if (StatusDoLivro == StatusDoLivro.Disponivel)
+			throw new DomainException("Livro Ja Esta Inativo");
+		if (StatusDoLivro == StatusDoLivro.Emprestado)
+			throw new DomainException("Não é possivel Inativar um livro Emprestado, Finalize o emprestimo e tente " +
+			"novamente");
+		StatusDoLivro = StatusDoLivro.Inativo;
+	}
+
+	public void ReativarLivro() 
+	{
+		if(StatusDoLivro == StatusDoLivro.Disponivel)
+			throw new DomainException("Livro ja Marcado como Disponivel");
+		StatusDoLivro = StatusDoLivro.Disponivel;
+	}
 	/// <summary>
 	/// Reservar livro para um usuário.
 	/// Altera apenas o estado, sem validação.

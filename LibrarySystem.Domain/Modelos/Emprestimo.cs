@@ -1,6 +1,6 @@
-﻿using LibrarySystem.DomainExcpetion.Exceptions;
+﻿using LibrarySystem.Domain.Exceptions;
 
-namespace LibrarySystem.DomainExcpetion.Modelos;
+namespace LibrarySystem.Domain.Modelos;
 
 public class Emprestimo
 {
@@ -26,7 +26,7 @@ public class Emprestimo
 	/// Finaliza o empréstimo registrando a data de devolução.
 	/// Só pode ser feito uma única vez.
 	/// </summary>
-	public void FinalizarEmprestimo()
+	internal void FinalizarEmprestimo()
 	{ 
 		DataDevolucao = DateTime.Today;
 		StatusEmprestimo = StatusAtividade.Inativo;
@@ -35,5 +35,11 @@ public class Emprestimo
 	/// <summary>
 	/// Verifica se o empréstimo está ativo (não finalizado)
 	/// </summary>
-	public bool EstaAtivo() => StatusEmprestimo == StatusAtividade.Ativo;
+	internal void ValidaDevolucao(Guid usuarioId) 
+	{
+		if (StatusEmprestimo == StatusAtividade.Ativo)
+			throw new DomainException("Emprestimo ja foi Finalizado");
+		if (usuarioId != UsuarioId)
+			throw new DomainException("Usuario que emprestou deve se o mesmo que realizou emprestimo");
+	}	
 }

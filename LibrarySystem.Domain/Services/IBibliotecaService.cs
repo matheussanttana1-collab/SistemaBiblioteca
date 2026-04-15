@@ -1,6 +1,6 @@
-using LibrarySystem.DomainExcpetion.Modelos;
+using LibrarySystem.Domain.Modelos;
 
-namespace LibrarySystem.DomainExcpetion.Services;
+namespace LibrarySystem.Domain.Services;
 
 /// <summary>
 /// Interface para o serviço de domínio que centraliza regras de negócio multi-entidade.

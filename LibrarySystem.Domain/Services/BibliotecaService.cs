@@ -1,7 +1,7 @@
-using LibrarySystem.DomainExcpetion.Exceptions;
-using LibrarySystem.DomainExcpetion.Modelos;
+using LibrarySystem.Domain.Modelos;
+using LibrarySystem.Domain.Exceptions;
 
-namespace LibrarySystem.DomainExcpetion.Services;
+namespace LibrarySystem.Domain.Services;
 
 /// <summary>
 /// Serviço de domínio que centraliza regras de negócio que envolvem múltiplas entidades.
@@ -43,7 +43,6 @@ public class BibliotecaService : IBibliotecaService
 		usuario.ValidarReserva();
 
 		livro.Reservar(usuario.Id);
-		usuario.ReservarLivro(livro);
 	}
 
 	/// <summary>
@@ -58,16 +57,9 @@ public class BibliotecaService : IBibliotecaService
 	/// </summary>
 	public void RealizarDevolucao(Emprestimo emprestimo, Livro livro, Usuario usuario)
 	{
-		if (!emprestimo.EstaAtivo())
-			throw new DomainException("Este empréstimo já foi finalizado.");
+		emprestimo.ValidaDevolucao(usuario.Id);
 
-		if (livro.StatusDoLivro != StatusDoLivro.Emprestado)
-			throw new DomainException($"O livro '{livro.Titulo}' não está emprestado.");
-
-		if (emprestimo.UsuarioId != usuario.Id)
-			throw new DomainException("Este empréstimo não pertence ao usuário informado.");
-
+		livro.FinalizarEmprestimo();
 		emprestimo.FinalizarEmprestimo();
-		livro.ProcessarDisponibilidade();
 	}
 }

@@ -12,12 +12,12 @@ public class InativarUsuarioUseCase
 		this.usuarioRepository = usuarioRepository;
 	}
 
-	public async Task Execute(InativarUsuarioDto dto)
+	public async Task Execute(Guid id)
 	{
-		var usuario = await usuarioRepository.BuscarUsuarioPeloId(dto.UsuarioId);
+		var usuario = await usuarioRepository.BuscarUsuarioPeloId(id);
 
 		if (usuario == null)
-			throw new InvalidOperationException($"Usuário com ID {dto.UsuarioId} não encontrado.");
+			throw new InvalidOperationException($"Usuário com ID {id} não encontrado.");
 
 		usuario.DesativarUsuario();
 
