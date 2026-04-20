@@ -1,4 +1,5 @@
-﻿using LibrarySystem.Applications.Ports.Out;
+﻿using Dapper;
+using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Modelos;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,21 @@ using System.Threading.Tasks;
 
 namespace LibrarySystem.Infrastructure.Repositories;
 
-public class EmprestimoRepository : IEmprestimoRepository
+public class EmprestimoRepository : RepositoryBase,IEmprestimoRepository
 {
-	private readonly string _connectionString;
-
-	public EmprestimoRepository(string connectionString)
+	
+	public EmprestimoRepository(string connectionString): base(connectionString)
 	{
-		 _connectionString = connectionString;
 	}
 
-	public Task AdicionarEmprestimoAsync(Emprestimo livro)
+	public async Task AdicionarEmprestimoAsync(Emprestimo emprestimo)
 	{
-		throw new NotImplementedException();
+		using var connection = CreateConnection();
+
+		var sql = @"INSERT INTO EMPRESTIMOS(id, usuarioId, livroId, dataEmprestimo, dataDevolucao, status)
+		VALUE (@Id, @UsuarioId, LivroId, dataEmprestimo, dataDevolucao, status";
+
+		await connection.ExecuteAsync(sql, emprestimo);
 	}
 
 	public Task<Emprestimo> BuscarEmprestimoPeloIdAsync(Guid id)

@@ -1,4 +1,5 @@
-﻿using LibrarySystem.Applications.Ports.Out;
+﻿using Dapper;
+using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Modelos;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace LibrarySystem.Infrastructure.Repositories;
 
-public class UsuarioRepository : IUsuarioRepository
+public class UsuarioRepository : RepositoryBase ,IUsuarioRepository
 {
 
-	private readonly string _connectionString;
+	public UsuarioRepository(string connectionString) : base(connectionString) { }
 
-	public UsuarioRepository(string connectionString)
+	public async Task AdicionarUsuarioAsync(Usuario usuario)
 	{
-		_connectionString = connectionString;
-	}
+		using var connection = CreateConnection();
 
-	public Task AdicionarUsuarioAsync(Usuario usuario)
-	{
-		throw new NotImplementedException();
+		var sql = @"INSERT INTO Usuarios(id, nome, cpf, tipoUsuario, AtividadesUsuario) 
+		VALUES (@Id,@Nome,@CPF,@TipoUsuario,@AtividadeUsuario)";
+
+		await connection.ExecuteAsync(sql, usuario);
 	}
 
 	public Task<Usuario> BuscarUsuarioComEmprestimoAsync(Guid id)

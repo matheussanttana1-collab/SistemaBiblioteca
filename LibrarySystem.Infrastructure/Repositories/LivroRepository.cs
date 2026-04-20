@@ -1,26 +1,33 @@
-﻿using LibrarySystem.Applications.DTOs;
+﻿using Dapper;
+using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Modelos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace LibrarySystem.Infrastructure.Repositories;
 
-public class LivroRepository : ILivroRepository
+public class LivroRepository :  RepositoryBase,ILivroRepository
 {
-	private readonly string _connectionString;
 
-	public LivroRepository(string connectionString)
-	{
-		_connectionString = connectionString;
-	}
+	public LivroRepository(string connectionString) : base(connectionString)
+	{}
 
-	public Task AdicionarLivroAsync(Livro livro)
+	public async Task AdicionarLivroAsync(Livro livro)
 	{
-		throw new NotImplementedException();
+		using var connection = CreateConnection();
+		var sql = @"INSERT INTO Livros(id,titulo,autor,isbm,ano_publicacao,generos,statusLivro)
+		VALUES(@Id,@Titulo,@Autor,@Generos)";
+
+		await connection.ExecuteAsync(sql, new
+		{
+			livro.Id,
+			livro.Titulo,
+			livro.Autor,
+			livro.ISBN,
+			livro.AnoPublicação,
+			Generos = string.Join(',', livro.Generos),
+			Status = (int)livro.StatusDoLivro
+		});
 	}
 
 	public Task<IEnumerable<Livro>> BuscarLivroPeloAutorAsync(string autor)

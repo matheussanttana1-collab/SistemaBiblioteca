@@ -4,7 +4,7 @@ namespace LibrarySystem.Domain.Modelos;
 
 public class Livro
 {
-	public Livro(string titulo, string autor, string isbn, int anoPublicação)
+	public Livro(string titulo, string autor, string isbn, int anoPublicação, List<string> Genero)
 	{
 		Titulo = titulo;
 		Id = Guid.NewGuid();
@@ -19,7 +19,7 @@ public class Livro
 	public string Autor { get; }
 	public string ISBN { get; }
 	public int AnoPublicação { get; }
-	public List<string> Generos { get; }
+	public List<string> Generos { get; } = new();
 	public StatusDoLivro StatusDoLivro { get; private set; }
 	public Guid? UsuarioQueReservouId { get; private set; }
 
