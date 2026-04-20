@@ -5,11 +5,11 @@ namespace LibrarySystem.Applications.Ports.Out;
 
 public interface IUsuarioRepository
 {
-	public Task<Usuario> BuscarUsuarios();
-	public Task<Usuario> BuscarUsuarioPeloId(Guid id);
-	public Task<Usuario> BuscarUsuarioComEmprestimo(Guid id);
-	public Task<Usuario> BuscarUsuarioComReservas(Guid id);
-	public Task AdicionarUsuario (Usuario usuario);
-	public Task SalvarMudancas(Usuario usuario);
-
+	public Task<Usuario> BuscarUsuariosAsync();
+	public Task<Usuario> BuscarUsuarioPeloIdAsync(Guid id);
+	public Task<IEnumerable<Usuario>> BuscarUsuarioPeloNomeAsync(string nome);
+	public Task<Usuario> BuscarUsuarioComEmprestimoAsync(Guid id);
+	public Task<Usuario> BuscarUsuarioComReservasAsync(Guid id);
+	public Task AdicionarUsuarioAsync(Usuario usuario);
+	public Task SalvarMudancasAsync(Usuario usuario);
 }

@@ -2,9 +2,8 @@ using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Services;
 
-namespace LibrarySystem.Applications.UseCases.Livros;
+namespace LibrarySystem.Applications.UseCases.LivrosCases;
 
-public record RealizarReservaDto(Guid LivroId, Guid UsuarioId);
 
 public class RealizarReservaUseCase
 {
@@ -20,14 +19,14 @@ public class RealizarReservaUseCase
 		this.bibliotecaService = bibliotecaService;
 	}
 
-	public async Task Execute(RealizarReservaDto dto)
+	public async Task Execute(ReservarLivroDto dto)
 	{
 		// Verificar existência
-		var livro = await livroRepository.BuscarLivroPeloId(dto.LivroId);
+		var livro = await livroRepository.BuscarLivroPeloIdAsync(dto.LivroId);
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {dto.LivroId} não encontrado.");
 
-		var usuario = await usuarioRepository.BuscarUsuarioComReservas(dto.UsuarioId);
+		var usuario = await usuarioRepository.BuscarUsuarioComReservasAsync(dto.UsuarioId);
 		if (usuario == null)
 			throw new InvalidOperationException($"Usuário com ID {dto.UsuarioId} não encontrado.");
 
@@ -35,6 +34,6 @@ public class RealizarReservaUseCase
 		bibliotecaService.RealizarReserva(livro, usuario);
 
 		// Persistir mudanças
-		await livroRepository.SalvarMudancas(livro);
+		await livroRepository.SalvarMudancasAsync(livro);
 	}
 }

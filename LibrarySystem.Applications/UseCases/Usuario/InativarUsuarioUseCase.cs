@@ -1,7 +1,7 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
 
-namespace LibrarySystem.Applications.UseCases.Usuarios;
+namespace LibrarySystem.Applications.UseCases.UsuarioCases;
 
 public class InativarUsuarioUseCase
 {
@@ -14,13 +14,13 @@ public class InativarUsuarioUseCase
 
 	public async Task Execute(Guid id)
 	{
-		var usuario = await usuarioRepository.BuscarUsuarioPeloId(id);
+		var usuario = await usuarioRepository.BuscarUsuarioPeloIdAsync(id);
 
 		if (usuario == null)
 			throw new InvalidOperationException($"Usuário com ID {id} não encontrado.");
 
 		usuario.DesativarUsuario();
 
-		await usuarioRepository.SalvarMudancas(usuario);
+		await usuarioRepository.SalvarMudancasAsync(usuario);
 	}
 }

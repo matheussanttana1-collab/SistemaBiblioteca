@@ -1,8 +1,8 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.DomainExcpetion.Modelos;
+using LibrarySystem.Domain.Modelos;
 
-namespace LibrarySystem.Applications.UseCases.Usuarios;
+namespace LibrarySystem.Applications.UseCases.UsuarioCases;
 
 public class CadastrarUsuarioUseCase
 {
@@ -17,6 +17,6 @@ public class CadastrarUsuarioUseCase
 	{
 		var usuario = new Usuario(dto.Nome, dto.CPF, dto.TipoUsuario);
 
-		await usuarioRepository.AdicionarUsuario(usuario);
+		await usuarioRepository.AdicionarUsuarioAsync(usuario);
 	}
 }

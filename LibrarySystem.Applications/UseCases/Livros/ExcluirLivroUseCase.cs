@@ -1,10 +1,10 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.DomainExcpetion.Modelos;
+using LibrarySystem.Domain.Modelos;
 using Microsoft.Win32;
 using System.Runtime.ConstrainedExecution;
 
-namespace LibrarySystem.Applications.UseCases.Livros;
+namespace LibrarySystem.Applications.UseCases.LivrosCases;
 
 public class ExcluirLivroUseCase
 {
@@ -20,14 +20,14 @@ public class ExcluirLivroUseCase
 
 	public async Task Execute(Guid id)
 	{
-		var livro = await livroRepo.BuscarLivroPeloId(id);
+		var livro = await livroRepo.BuscarLivroPeloIdAsync(id);
 
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {id} não encontrado.");
-		var RegistroDeAtividade = await emprestimoRepo.BuscarRegistroDeAtividadeLivro(id);
+		var RegistroDeAtividade = await emprestimoRepo.BuscarRegistroDeAtividadeLivroAsync(id);
 		if (RegistroDeAtividade)
 			throw new InvalidOperationException("Este livro não pode ser excluído permanentemente pois já possui " +
 			"registros de empréstimos.");
-		await livroRepo.DeletarLivro(livro);
+		await livroRepo.DeletarLivroAsync(livro);
 	}
 }

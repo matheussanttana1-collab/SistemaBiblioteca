@@ -3,7 +3,7 @@ using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Modelos;
 
 
-namespace LibrarySystem.Applications.UseCases.Livros;
+namespace LibrarySystem.Applications.UseCases.LivrosCases;
 
 public class CadastrarLivroUseCase
 {
@@ -18,6 +18,6 @@ public class CadastrarLivroUseCase
 	{
 		Livro livro = new Livro(dto.Titulo, dto.Autor, dto.Isbn, dto.AnoPublicacao);
 
-		await livroRepository.AdicionarLivro(livro);
+		await livroRepository.AdicionarLivroAsync(livro);
 	}
 }

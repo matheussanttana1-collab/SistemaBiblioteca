@@ -19,6 +19,7 @@ public class Livro
 	public string Autor { get; }
 	public string ISBN { get; }
 	public int AnoPublicação { get; }
+	public List<string> Generos { get; }
 	public StatusDoLivro StatusDoLivro { get; private set; }
 	public Guid? UsuarioQueReservouId { get; private set; }
 

@@ -1,15 +1,17 @@
-﻿
-
-using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.Domain.Services;
+﻿using LibrarySystem.Applications.Ports.Out;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LibrarySystem.Applications.UseCases.LivrosCases;
 
-public class RetirarReservaUseCase
+public class ReativarLivroUseCase
 {
 	private readonly ILivroRepository livroRepo;
 
-	public RetirarReservaUseCase(ILivroRepository livroRepository)
+	public ReativarLivroUseCase(ILivroRepository livroRepository)
 	{
 		livroRepo = livroRepository;
 	}
@@ -21,7 +23,7 @@ public class RetirarReservaUseCase
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {id} não encontrado.");
 
-		livro.RetirarReserva();
+		livro.ReativarLivro();
 
 		// Persistir mudanças
 		await livroRepo.SalvarMudancasAsync(livro);

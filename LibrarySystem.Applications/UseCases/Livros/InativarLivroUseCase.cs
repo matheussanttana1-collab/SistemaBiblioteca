@@ -1,8 +1,7 @@
-using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
 using LibrarySystem.Domain.Exceptions;
 
-namespace LibrarySystem.Applications.UseCases.Livros;
+namespace LibrarySystem.Applications.UseCases.LivrosCases;
 
 public class InativarLivroUseCase
 {
@@ -17,11 +16,11 @@ public class InativarLivroUseCase
 
 	public async Task Execute(Guid id)
 	{
-		var livro = await livroRepository.BuscarLivroPeloId(id);
+		var livro = await livroRepository.BuscarLivroPeloIdAsync(id);
 
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {id} não encontrado.");
-		var temHistorico = await emprestimoRepository.BuscarRegistroDeAtividadeLivro(livro.Id);
+		var temHistorico = await emprestimoRepository.BuscarRegistroDeAtividadeLivroAsync(livro.Id);
 
 		if (temHistorico)
 			throw new DomainException("Este livro não pode ser excluído permanentemente pois já possui registros " +
@@ -29,6 +28,6 @@ public class InativarLivroUseCase
 
 		livro.InativarLivro();
 
-		await livroRepository.SalvarMudancas(livro);
+		await livroRepository.SalvarMudancasAsync(livro);
 	}
 }

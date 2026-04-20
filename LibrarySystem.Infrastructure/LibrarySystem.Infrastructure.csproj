@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Persistence\" />
+    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibrarySystem.Applications\LibrarySystem.Applications.csproj" />
+    <ProjectReference Include="..\LibrarySystem.Domain\LibrarySystem.Domain.csproj" />
   </ItemGroup>
 
 </Project>

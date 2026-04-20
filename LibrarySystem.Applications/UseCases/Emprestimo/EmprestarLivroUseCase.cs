@@ -1,11 +1,8 @@
 using LibrarySystem.Applications.DTOs;
 using LibrarySystem.Applications.Ports.Out;
-using LibrarySystem.DomainExcpetion.Modelos;
-using LibrarySystem.DomainExcpetion.Services;
+using LibrarySystem.Domain.Services;
 
-namespace LibrarySystem.Applications.UseCases.Emprestimos;
-
-public record EmprestarLivroDto(Guid LivroId, Guid UsuarioId);
+namespace LibrarySystem.Applications.UseCases.EmprestimoCases;
 
 public class EmprestarLivroUseCase
 {
@@ -23,18 +20,18 @@ public class EmprestarLivroUseCase
 		this.bibliotecaService = bibliotecaService;
 	}
 
-	public async Task Execute(EmprestarLivroDto dto)
+	public async Task Execute(RealizarEmprestimoDto dto)
 	{
-		var livro = await livroRepository.BuscarLivroPeloId(dto.LivroId);
+		var livro = await livroRepository.BuscarLivroPeloIdAsync(dto.LivroId);
 		if (livro == null)
 			throw new InvalidOperationException($"Livro com ID {dto.LivroId} não encontrado.");
 
-		var usuario = await usuarioRepository.BuscarUsuarioComEmprestimo(dto.UsuarioId);
+		var usuario = await usuarioRepository.BuscarUsuarioComEmprestimoAsync(dto.UsuarioId);
 		if (usuario == null)
 			throw new InvalidOperationException($"Usuário com ID {dto.UsuarioId} não encontrado.");
 
 		var emprestimo = bibliotecaService.RealizarEmprestimo(livro, usuario);
 
-		await emprestimoRepository.AdicionarEmprestimo(emprestimo);
+		await emprestimoRepository.AdicionarEmprestimoAsync(emprestimo);
 	}
 }
